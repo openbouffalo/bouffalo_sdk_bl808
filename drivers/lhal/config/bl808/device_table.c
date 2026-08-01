@@ -466,7 +466,11 @@ struct bflb_device_s bl808_device_table[] = {
       .user_data = NULL },
     { .name = BFLB_NAME_USB_V2,
       .reg_base = USB_BASE,
+#if defined(CPU_M0) || defined(CPU_LP)
       .irq_num = BL808_IRQ_USB,
+#else
+      .irq_num = 0xff,
+#endif
       .idx = 0,
       .sub_idx = 0,
       .dev_type = BFLB_DEVICE_TYPE_USB,
