@@ -92,6 +92,16 @@ struct bflb_device_s bl808_device_table[] = {
       .idx = 0,
       .dev_type = BFLB_DEVICE_TYPE_SPI,
       .user_data = NULL },
+    { .name = BFLB_NAME_SPI1,
+      .reg_base = SPI1_BASE,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_SPI1,
+#else
+      .irq_num = 0xff,
+#endif
+      .idx = 0,
+      .dev_type = BFLB_DEVICE_TYPE_SPI,
+      .user_data = NULL },
     { .name = BFLB_NAME_PWM_V2_0,
       .reg_base = PWM_BASE,
 #if defined(CPU_M0) || defined(CPU_LP)
