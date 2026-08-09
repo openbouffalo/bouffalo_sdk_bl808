@@ -430,7 +430,19 @@ int bflb_dbi_send_cmd_read_data(struct bflb_device_s *dev, uint8_t cmd, uint8_t 
     return 0;
 }
 
-int bflb_dbi_send_cmd_pixel(struct bflb_device_s *dev, uint8_t cmd, uint32_t pixel_cnt, void *pixel_buff)
+/**
+ * Configure the command/pixel-count/pixel-mode registers and arm the TX
+ * FIFO for a pixel transfer, without asserting DBI_CR_DBI_EN. Splitting
+ * this out from the actual trigger lets DMA-driven transfers get the FIFO
+ * pre-loaded (or at least the DMA request already latched) before the
+ * DBI shift engine is told to start clocking data out. Triggering EN
+ * before any data is available makes the engine clock out whatever
+ * garbage is sitting in the just-cleared FIFO.
+ *
+ * Returns false if there is nothing to send (no command phase and no
+ * pixel data), in which case the caller must not trigger the transaction.
+ */
+bool bflb_dbi_pixel_transfer_prepare(struct bflb_device_s *dev, uint8_t cmd, uint32_t pixel_cnt)
 {
     uint32_t reg_base;
     uint32_t regval;
@@ -444,7 +456,7 @@ int bflb_dbi_send_cmd_pixel(struct bflb_device_s *dev, uint8_t cmd, uint32_t pix
 
     if (((regval & DBI_CR_DBI_CMD_EN) == 0) && (pixel_cnt == 0)) {
         /* There is no data or command phase, nothing to do */
-        return 0;
+        return false;
     }
 
     /* pixel mode, write */
@@ -481,10 +493,40 @@ int bflb_dbi_send_cmd_pixel(struct bflb_device_s *dev, uint8_t cmd, uint32_t pix
     /* clear complete interrupt */
     bflb_dbi808_int_clear(reg_base);
 
-    /* trigger the transaction */
+    return true;
+}
+
+/**
+ * Assert DBI_CR_DBI_EN to actually start clocking out the configured
+ * command/pixel transaction. Must be called after
+ * bflb_dbi_pixel_transfer_prepare(), and for DMA-driven transfers, only
+ * after the DMA channel has been started so the FIFO already has (or is
+ * actively receiving) valid data.
+ */
+void bflb_dbi_pixel_transfer_start(struct bflb_device_s *dev)
+{
+    uint32_t reg_base;
+    uint32_t regval;
+
+    reg_base = dev->reg_base;
+
     regval = getreg32(reg_base + DBI_CONFIG_OFFSET);
     regval |= DBI_CR_DBI_EN;
     putreg32(regval, reg_base + DBI_CONFIG_OFFSET);
+}
+
+int bflb_dbi_send_cmd_pixel(struct bflb_device_s *dev, uint8_t cmd, uint32_t pixel_cnt, void *pixel_buff)
+{
+    uint32_t reg_base;
+
+    reg_base = dev->reg_base;
+
+    if (!bflb_dbi_pixel_transfer_prepare(dev, cmd, pixel_cnt)) {
+        return 0;
+    }
+
+    /* trigger the transaction */
+    bflb_dbi_pixel_transfer_start(dev);
 
     /* No need to fill in fifo, for DMA mode */
     if (pixel_buff == NULL) {
