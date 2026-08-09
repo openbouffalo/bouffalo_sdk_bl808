@@ -32,168 +32,168 @@
 /** @defgroup GPIO_PIN gpio pin definition
   * @{
   */
-#define GPIO_PIN_0      0
-#define GPIO_PIN_1      1
-#define GPIO_PIN_2      2
-#define GPIO_PIN_3      3
-#define GPIO_PIN_4      4
-#define GPIO_PIN_5      5
-#define GPIO_PIN_6      6
-#define GPIO_PIN_7      7
-#define GPIO_PIN_8      8
-#define GPIO_PIN_9      9
-#define GPIO_PIN_10     10
-#define GPIO_PIN_11     11
-#define GPIO_PIN_12     12
+#define GPIO_PIN_0  0
+#define GPIO_PIN_1  1
+#define GPIO_PIN_2  2
+#define GPIO_PIN_3  3
+#define GPIO_PIN_4  4
+#define GPIO_PIN_5  5
+#define GPIO_PIN_6  6
+#define GPIO_PIN_7  7
+#define GPIO_PIN_8  8
+#define GPIO_PIN_9  9
+#define GPIO_PIN_10 10
+#define GPIO_PIN_11 11
+#define GPIO_PIN_12 12
 #if !defined(BL702)
-#define GPIO_PIN_13     13
+#define GPIO_PIN_13 13
 #endif
-#define GPIO_PIN_14     14
-#define GPIO_PIN_15     15
-#define GPIO_PIN_16     16
-#define GPIO_PIN_17     17
-#define GPIO_PIN_18     18
-#define GPIO_PIN_19     19
-#define GPIO_PIN_20     20
-#define GPIO_PIN_21     21
-#define GPIO_PIN_22     22
+#define GPIO_PIN_14 14
+#define GPIO_PIN_15 15
+#define GPIO_PIN_16 16
+#define GPIO_PIN_17 17
+#define GPIO_PIN_18 18
+#define GPIO_PIN_19 19
+#define GPIO_PIN_20 20
+#define GPIO_PIN_21 21
+#define GPIO_PIN_22 22
 #if defined(BL602)
-#define GPIO_PIN_MAX    23
+#define GPIO_PIN_MAX 23
 #elif defined(BL702)
-#define GPIO_PIN_23     23
-#define GPIO_PIN_24     24
-#define GPIO_PIN_25     25
-#define GPIO_PIN_26     26
-#define GPIO_PIN_27     27
-#define GPIO_PIN_28     28
-#define GPIO_PIN_29     29
-#define GPIO_PIN_30     30
-#define GPIO_PIN_31     31
+#define GPIO_PIN_23  23
+#define GPIO_PIN_24  24
+#define GPIO_PIN_25  25
+#define GPIO_PIN_26  26
+#define GPIO_PIN_27  27
+#define GPIO_PIN_28  28
+#define GPIO_PIN_29  29
+#define GPIO_PIN_30  30
+#define GPIO_PIN_31  31
 /* external flash */
-#define GPIO_PIN_32     32
-#define GPIO_PIN_33     33
-#define GPIO_PIN_34     34
-#define GPIO_PIN_35     35
-#define GPIO_PIN_36     36
-#define GPIO_PIN_37     37
-#define GPIO_PIN_MAX    38
+#define GPIO_PIN_32  32
+#define GPIO_PIN_33  33
+#define GPIO_PIN_34  34
+#define GPIO_PIN_35  35
+#define GPIO_PIN_36  36
+#define GPIO_PIN_37  37
+#define GPIO_PIN_MAX 38
 #elif defined(BL606P) || defined(BL808)
-#define GPIO_PIN_23     23
-#define GPIO_PIN_24     24
-#define GPIO_PIN_25     25
-#define GPIO_PIN_26     26
-#define GPIO_PIN_27     27
-#define GPIO_PIN_28     28
-#define GPIO_PIN_29     29
-#define GPIO_PIN_30     30
-#define GPIO_PIN_31     31
-#define GPIO_PIN_32     32
-#define GPIO_PIN_33     33
-#define GPIO_PIN_34     34
-#define GPIO_PIN_35     35
-#define GPIO_PIN_36     36
-#define GPIO_PIN_37     37
-#define GPIO_PIN_38     38
-#define GPIO_PIN_39     39
-#define GPIO_PIN_40     40
-#define GPIO_PIN_41     41
-#define GPIO_PIN_42     42
-#define GPIO_PIN_43     43
-#define GPIO_PIN_44     44
-#define GPIO_PIN_45     45
-#define GPIO_PIN_MAX    46
+#define GPIO_PIN_23  23
+#define GPIO_PIN_24  24
+#define GPIO_PIN_25  25
+#define GPIO_PIN_26  26
+#define GPIO_PIN_27  27
+#define GPIO_PIN_28  28
+#define GPIO_PIN_29  29
+#define GPIO_PIN_30  30
+#define GPIO_PIN_31  31
+#define GPIO_PIN_32  32
+#define GPIO_PIN_33  33
+#define GPIO_PIN_34  34
+#define GPIO_PIN_35  35
+#define GPIO_PIN_36  36
+#define GPIO_PIN_37  37
+#define GPIO_PIN_38  38
+#define GPIO_PIN_39  39
+#define GPIO_PIN_40  40
+#define GPIO_PIN_41  41
+#define GPIO_PIN_42  42
+#define GPIO_PIN_43  43
+#define GPIO_PIN_44  44
+#define GPIO_PIN_45  45
+#define GPIO_PIN_MAX 46
 #elif defined(BL616)
-#define GPIO_PIN_23     23
-#define GPIO_PIN_24     24
-#define GPIO_PIN_25     25
-#define GPIO_PIN_26     26
-#define GPIO_PIN_27     27
-#define GPIO_PIN_28     28
-#define GPIO_PIN_29     29
-#define GPIO_PIN_30     30
-#define GPIO_PIN_31     31
-#define GPIO_PIN_32     32
-#define GPIO_PIN_33     33
-#define GPIO_PIN_34     34
-#define GPIO_PIN_MAX    35
+#define GPIO_PIN_23  23
+#define GPIO_PIN_24  24
+#define GPIO_PIN_25  25
+#define GPIO_PIN_26  26
+#define GPIO_PIN_27  27
+#define GPIO_PIN_28  28
+#define GPIO_PIN_29  29
+#define GPIO_PIN_30  30
+#define GPIO_PIN_31  31
+#define GPIO_PIN_32  32
+#define GPIO_PIN_33  33
+#define GPIO_PIN_34  34
+#define GPIO_PIN_MAX 35
 #elif defined(BL702L)
-#define GPIO_PIN_23     23
-#define GPIO_PIN_24     24
-#define GPIO_PIN_25     25
-#define GPIO_PIN_26     26
-#define GPIO_PIN_27     27
-#define GPIO_PIN_28     28
-#define GPIO_PIN_29     29
-#define GPIO_PIN_30     30
-#define GPIO_PIN_31     31
+#define GPIO_PIN_23  23
+#define GPIO_PIN_24  24
+#define GPIO_PIN_25  25
+#define GPIO_PIN_26  26
+#define GPIO_PIN_27  27
+#define GPIO_PIN_28  28
+#define GPIO_PIN_29  29
+#define GPIO_PIN_30  30
+#define GPIO_PIN_31  31
 /* external flash */
-#define GPIO_PIN_32     32
-#define GPIO_PIN_33     33
-#define GPIO_PIN_34     34
-#define GPIO_PIN_35     35
-#define GPIO_PIN_36     36
-#define GPIO_PIN_37     37
-#define GPIO_PIN_MAX    38
+#define GPIO_PIN_32  32
+#define GPIO_PIN_33  33
+#define GPIO_PIN_34  34
+#define GPIO_PIN_35  35
+#define GPIO_PIN_36  36
+#define GPIO_PIN_37  37
+#define GPIO_PIN_MAX 38
 #elif defined(BL616D)
-#define GPIO_PIN_23     23
-#define GPIO_PIN_24     24
-#define GPIO_PIN_25     25
-#define GPIO_PIN_26     26
-#define GPIO_PIN_27     27
-#define GPIO_PIN_28     28
-#define GPIO_PIN_29     29
-#define GPIO_PIN_30     30
-#define GPIO_PIN_31     31
-#define GPIO_PIN_32     32
-#define GPIO_PIN_33     33
-#define GPIO_PIN_34     34
-#define GPIO_PIN_35     35
-#define GPIO_PIN_36     36
-#define GPIO_PIN_37     37
-#define GPIO_PIN_38     38
-#define GPIO_PIN_39     39
-#define GPIO_PIN_40     40
-#define GPIO_PIN_41     41
-#define GPIO_PIN_42     42
-#define GPIO_PIN_43     43
-#define GPIO_PIN_44     44
-#define GPIO_PIN_45     45
-#define GPIO_PIN_46     46
-#define GPIO_PIN_47     47
-#define GPIO_PIN_48     48
-#define GPIO_PIN_49     49
-#define GPIO_PIN_50     50
-#define GPIO_PIN_51     51
-#define GPIO_PIN_52     52
-#define GPIO_PIN_MAX    53
+#define GPIO_PIN_23  23
+#define GPIO_PIN_24  24
+#define GPIO_PIN_25  25
+#define GPIO_PIN_26  26
+#define GPIO_PIN_27  27
+#define GPIO_PIN_28  28
+#define GPIO_PIN_29  29
+#define GPIO_PIN_30  30
+#define GPIO_PIN_31  31
+#define GPIO_PIN_32  32
+#define GPIO_PIN_33  33
+#define GPIO_PIN_34  34
+#define GPIO_PIN_35  35
+#define GPIO_PIN_36  36
+#define GPIO_PIN_37  37
+#define GPIO_PIN_38  38
+#define GPIO_PIN_39  39
+#define GPIO_PIN_40  40
+#define GPIO_PIN_41  41
+#define GPIO_PIN_42  42
+#define GPIO_PIN_43  43
+#define GPIO_PIN_44  44
+#define GPIO_PIN_45  45
+#define GPIO_PIN_46  46
+#define GPIO_PIN_47  47
+#define GPIO_PIN_48  48
+#define GPIO_PIN_49  49
+#define GPIO_PIN_50  50
+#define GPIO_PIN_51  51
+#define GPIO_PIN_52  52
+#define GPIO_PIN_MAX 53
 #elif defined(BL616L)
-#define GPIO_PIN_23     23
-#define GPIO_PIN_24     24
-#define GPIO_PIN_25     25
-#define GPIO_PIN_26     26
-#define GPIO_PIN_27     27
-#define GPIO_PIN_28     28
-#define GPIO_PIN_29     29
-#define GPIO_PIN_30     30
-#define GPIO_PIN_31     31
-#define GPIO_PIN_32     32
-#define GPIO_PIN_33     33
-#define GPIO_PIN_34     34
-#define GPIO_PIN_35     35
-#define GPIO_PIN_36     36
-#define GPIO_PIN_MAX    37
+#define GPIO_PIN_23  23
+#define GPIO_PIN_24  24
+#define GPIO_PIN_25  25
+#define GPIO_PIN_26  26
+#define GPIO_PIN_27  27
+#define GPIO_PIN_28  28
+#define GPIO_PIN_29  29
+#define GPIO_PIN_30  30
+#define GPIO_PIN_31  31
+#define GPIO_PIN_32  32
+#define GPIO_PIN_33  33
+#define GPIO_PIN_34  34
+#define GPIO_PIN_35  35
+#define GPIO_PIN_36  36
+#define GPIO_PIN_MAX 37
 #elif defined(BL628)
-#define GPIO_PIN_23     23
-#define GPIO_PIN_24     24
-#define GPIO_PIN_25     25
-#define GPIO_PIN_26     26
-#define GPIO_PIN_27     27
-#define GPIO_PIN_28     28
-#define GPIO_PIN_29     29
-#define GPIO_PIN_30     30
-#define GPIO_PIN_31     31
-#define GPIO_PIN_32     32
-#define GPIO_PIN_MAX    33
+#define GPIO_PIN_23  23
+#define GPIO_PIN_24  24
+#define GPIO_PIN_25  25
+#define GPIO_PIN_26  26
+#define GPIO_PIN_27  27
+#define GPIO_PIN_28  28
+#define GPIO_PIN_29  29
+#define GPIO_PIN_30  30
+#define GPIO_PIN_31  31
+#define GPIO_PIN_32  32
+#define GPIO_PIN_MAX 33
 #endif
 
 /**
@@ -203,55 +203,7 @@
 /* cfgset list */
 #define GPIO_FUNC_SHIFT (0) /* Bits 0-4: GPIO function */
 #define GPIO_FUNC_MASK  (0x1f << GPIO_FUNC_SHIFT)
-#if defined(BL602)
-#define GPIO_FUNC_SDU  (1 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SPI0 (4 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2C0 (6 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PWM0 (8 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_JTAG (14 << GPIO_FUNC_SHIFT)
-#elif defined(BL702)
-#define GPIO_FUNC_CLK_OUT  (0 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2S      (3 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SPI0     (4 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2C0     (6 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PWM0     (8 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_CAM      (9 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_JTAG     (14 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_EMAC     (19 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_CAM_MCLK (23 << GPIO_FUNC_SHIFT)
-#elif defined(BL702L)
-#define GPIO_FUNC_CLKOUT  (0 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SPI0    (4 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2C0    (6 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PWM0    (8 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PWM1    (8 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_KEYSCAN (13 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_JTAG    (14 << GPIO_FUNC_SHIFT)
-#elif defined(BL616) || defined(BL616L)
-#define GPIO_FUNC_SDH       (0 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SPI0      (1 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2S       (3 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PDM       (4 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2C0      (5 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2C1      (6 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_EMAC      (8 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_CAM       (9 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_GPIO      (11 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SDU       (12 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PWM0      (16 << GPIO_FUNC_SHIFT)
-#if defined(BL616L)
-#define GPIO_FUNC_SPI1      (20 << GPIO_FUNC_SHIFT)
-#endif
-#define GPIO_FUNC_DBI_B     (22 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_DBI_C     (23 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_DBI_QSPI  (24 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_AUDAC_PWM (25 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_JTAG      (26 << GPIO_FUNC_SHIFT)
-#if defined(BL616L)
-#define GPIO_FUNC_PEC       (27 << GPIO_FUNC_SHIFT)
-#endif
-#define GPIO_FUNC_CLKOUT    (31 << GPIO_FUNC_SHIFT)
-#elif defined(BL606P) || defined(BL808)
+#if defined(BL606P) || defined(BL808)
 #define GPIO_FUNC_SDH     (0 << GPIO_FUNC_SHIFT)
 #define GPIO_FUNC_SPI0    (1 << GPIO_FUNC_SHIFT)
 #define GPIO_FUNC_I2S     (3 << GPIO_FUNC_SHIFT)
@@ -273,55 +225,6 @@
 #define GPIO_FUNC_JTAG_M0 (26 << GPIO_FUNC_SHIFT)
 #define GPIO_FUNC_JTAG_D0 (27 << GPIO_FUNC_SHIFT)
 #define GPIO_FUNC_CLKOUT  (31 << GPIO_FUNC_SHIFT)
-#elif defined(BL628)
-#define GPIO_FUNC_SDH     (0 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SPI0    (1 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2S     (3 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PDM     (4 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2C0    (5 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2C1    (6 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_UART    (7 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_GMAC    (8 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_CAM     (9 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_GPIO    (11 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SDU     (12 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PWM0    (16 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_JTAG_M1 (17 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_UART3   (18 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_DBI_B   (22 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_DBI_C   (23 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_JTAG_M0 (26 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_CLKOUT  (31 << GPIO_FUNC_SHIFT)
-#elif defined(BL616D)
-#define GPIO_FUNC_SDH       (0 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SPI       (1 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SPI0      (1 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SPI1      (1 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2S       (3 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2C0      (5 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2C1      (5 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_I2C2      (6 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_UART      (7 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_EMAC      (8 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_CAM       (9 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_ANALOG    (10 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_GPIO      (11 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_SDU       (12 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_IRTX      (12 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PWM       (16 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PWM0      (16 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PWM1      (16 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_JTAG_M1   (17 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_JTAG_LP   (17 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_UART3     (18 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_AUDAC     (21 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_DBI_B     (22 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_DBI_C     (23 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_DBI_QSPI  (23 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_DPI       (24 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_JTAG_M0   (26 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_PEC       (27 << GPIO_FUNC_SHIFT)
-#define GPIO_FUNC_CLKOUT    (31 << GPIO_FUNC_SHIFT)
 #endif
 
 #define GPIO_MODE_SHIFT                      (5) /* Bits 5-8: Port Mode */
