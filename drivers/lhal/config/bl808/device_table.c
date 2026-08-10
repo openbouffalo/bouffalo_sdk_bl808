@@ -99,7 +99,7 @@ struct bflb_device_s bl808_device_table[] = {
 #else
       .irq_num = 0xff,
 #endif
-      .idx = 0,
+      .idx = 1,
       .dev_type = BFLB_DEVICE_TYPE_SPI,
       .user_data = NULL },
     { .name = BFLB_NAME_PWM_V2_0,
