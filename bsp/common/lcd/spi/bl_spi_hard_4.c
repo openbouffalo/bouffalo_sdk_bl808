@@ -344,7 +344,7 @@ int lcd_spi_hard_4_transmit_cmd_pixel_fill_async(uint8_t cmd, uint32_t pixel_val
         bflb_spi_link_txdma(spi_hd, true);
 
         /* disable dma src_addr_inc */
-        bflb_dma_feature_control(spi_hd, DMA_CMD_SET_SRCADDR_INCREMENT, false);
+        bflb_dma_feature_control(spi_dma_hd, DMA_CMD_SET_SRCADDR_INCREMENT, false);
 
         dma_tx_transfers[0].src_addr = (uint32_t)(uintptr_t)&pixel_val;
         dma_tx_transfers[0].dst_addr = spi_tx_fifo_address;
