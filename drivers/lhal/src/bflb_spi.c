@@ -8,6 +8,46 @@
 #define GLB_SPI_MODE_ADDRESS 0x20000510
 #endif
 
+static uint32_t spi_glb_master_mode_mask(struct bflb_device_s *dev)
+{
+#if defined(BL616L)
+    if (dev->idx == 0) {
+        return 1U << 12;
+    } else if (dev->idx == 1) {
+        return 1U << 16;
+    }
+#elif defined(BL616D)
+    if (dev->idx == 0) {
+        return 1U << 12;
+    } else if (dev->idx == 1) {
+        return 1U << 16;
+    } else if (dev->idx == 2) {
+        return 1U << 18;
+    }
+#elif defined(BL808)
+    /* BL808 routes spi1 through MM_SPI rather than the SPI0 GLB bit. */
+    if (dev->idx == 1) {
+        return 1U << 27;
+    }
+#endif
+
+    return 1U << 12;
+}
+
+static void spi_glb_set_master_mode(struct bflb_device_s *dev, bool enable)
+{
+    uint32_t regval = getreg32(GLB_SPI_MODE_ADDRESS);
+    uint32_t mask = spi_glb_master_mode_mask(dev);
+
+    if (enable) {
+        regval |= mask;
+    } else {
+        regval &= ~mask;
+    }
+
+    putreg32(regval, GLB_SPI_MODE_ADDRESS);
+}
+
 void bflb_spi_init(struct bflb_device_s *dev, const struct bflb_spi_config_s *config)
 {
     LHAL_PARAM_ASSERT(dev);
@@ -28,9 +68,9 @@ void bflb_spi_init(struct bflb_device_s *dev, const struct bflb_spi_config_s *co
 
 #if defined(BL616D)
 #if defined(CPU_MODEL_A0)
-    if(dev->idx == 1) {
+    if (dev->idx == 1) {
 #else
-    if(dev->idx == 3) {
+    if (dev->idx == 3) {
 #endif
         uint32_t mini_spi_mode = getreg32(0x200005cc);
         if (config->role == SPI_ROLE_MASTER) {
@@ -43,51 +83,7 @@ void bflb_spi_init(struct bflb_device_s *dev, const struct bflb_spi_config_s *co
 #endif
 
     /* GLB select master or slave mode */
-    regval = getreg32(GLB_SPI_MODE_ADDRESS);
-#if defined(BL616L)
-    if (config->role == SPI_ROLE_MASTER) {
-        if (dev->idx == 0) {
-            regval |= (1 << 12);
-        } else if (dev->idx == 1) {
-            regval |= (1 << 16);
-        }
-    } else {
-        if (dev->idx == 0) {
-            regval &= ~(1 << 12);
-        } else if (dev->idx == 1) {
-            regval &= ~(1 << 16);
-        }
-    }
-#elif defined(BL616D)
-    if (config->role == SPI_ROLE_MASTER) {
-        if (dev->idx == 0) {
-            regval |= (1 << 12);
-#if !defined(CPU_MODEL_A0)
-        } else if (dev->idx == 1) {
-            regval |= (1 << 16);
-        } else if (dev->idx == 2) {
-            regval |= (1 << 18);
-#endif
-        }
-    } else {
-        if (dev->idx == 0) {
-            regval &= ~(1 << 12);
-#if !defined(CPU_MODEL_A0)
-        } else if (dev->idx == 1) {
-            regval &= ~(1 << 16);
-        } else if (dev->idx == 2) {
-            regval &= ~(1 << 18);
-#endif
-        }
-    }
-#else
-    if (config->role == SPI_ROLE_MASTER) {
-        regval |= (1 << 12);
-    } else {
-        regval &= ~(1 << 12);
-    }
-#endif
-    putreg32(regval, GLB_SPI_MODE_ADDRESS);
+    spi_glb_set_master_mode(dev, config->role == SPI_ROLE_MASTER);
 
     reg_base = dev->reg_base;
     /* integer frequency segmentation by rounding */
@@ -318,7 +314,8 @@ ATTR_TCM_SECTION uint32_t bflb_spi_poll_send(struct bflb_device_s *dev, uint32_t
 }
 
 /* read and write data */
-ATTR_TCM_SECTION int bflb_spi_poll_exchange(struct bflb_device_s *dev, const void *txbuffer, void *rxbuffer, size_t nbytes)
+ATTR_TCM_SECTION int bflb_spi_poll_exchange(struct bflb_device_s *dev, const void *txbuffer, void *rxbuffer,
+                                            size_t nbytes)
 {
 #ifdef romapi_bflb_spi_poll_exchange
     return romapi_bflb_spi_poll_exchange(dev, txbuffer, rxbuffer, nbytes);
@@ -887,13 +884,7 @@ int bflb_spi_feature_control(struct bflb_device_s *dev, int cmd, size_t arg)
 
         case SPI_CMD_SET_ROLE:
             /* GLB select master or slave mode */
-            regval = getreg32(GLB_SPI_MODE_ADDRESS);
-            if (arg == SPI_ROLE_MASTER) {
-                regval |= 1 << 12;
-            } else {
-                regval &= ~(1 << 12);
-            }
-            putreg32(regval, GLB_SPI_MODE_ADDRESS);
+            spi_glb_set_master_mode(dev, arg == SPI_ROLE_MASTER);
 
             /* enable spi */
             regval = getreg32(reg_base + SPI_CONFIG_OFFSET);
