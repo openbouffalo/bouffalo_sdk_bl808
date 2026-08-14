@@ -52,6 +52,17 @@ struct bflb_device_s bl808_device_table[] = {
       .idx = 0,
       .dev_type = BFLB_DEVICE_TYPE_UART,
       .user_data = NULL },
+    { .name = BFLB_NAME_DBI,
+      .reg_base = DBI_BASE,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DBI,
+#else
+      .irq_num = 0xff,
+#endif
+      .idx = 0,
+      .sub_idx = 0,
+      .dev_type = BFLB_DEVICE_TYPE_DBI,
+      .user_data = NULL },
     { .name = BFLB_NAME_UART1,
       .reg_base = UART1_BASE,
 #if defined(CPU_M0) || defined(CPU_LP)
@@ -657,6 +668,17 @@ struct bflb_device_s bl808_device_table[] = {
       .sub_idx = 0,
       .dev_type = BFLB_DEVICE_TYPE_SEC_PKA,
       .user_data = NULL },
+    { .name = BFLB_NAME_DBI,
+      .reg_base = DBI_BASE,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DBI,
+#else
+      .irq_num = 0xff,
+#endif
+      .idx = 0,
+      .sub_idx = 0,
+      .dev_type = BFLB_DEVICE_TYPE_DBI,
+      .user_data = NULL },
     { .name = BFLB_NAME_WDT,
       .reg_base = TIMER0_BASE,
 #if defined(CPU_M0) || defined(CPU_LP)
@@ -678,6 +700,7 @@ struct bflb_device_s *bflb_device_get_by_name(const char *name)
             return &bl808_device_table[i];
         }
     }
+    printf("FAILED TO FIND DEVICE `%s` in device table \r\n", name);
     LHAL_PARAM_ASSERT(0);
     bflb_lhal_assert_func(__FILE__, __LINE__, __func__, name);
     return NULL;
