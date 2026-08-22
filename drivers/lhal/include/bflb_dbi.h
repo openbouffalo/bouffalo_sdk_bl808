@@ -53,24 +53,40 @@
 /** @defgroup DBI_PIXEL_INPUT_FORMAT dbi fifo input pixel format, the FIFO are filled in 32-bits width definition
   * @{
   */
-#define DBI_PIXEL_INPUT_FORMAT_NBGR_8888 0 /* 32-bit/pixel, memory byte: [0]->pixel[0][R], [1]->pixel[0][G], [2]->pixel[0][B], [3]->invalid, [4]->pixel[1][R], ... */
-#define DBI_PIXEL_INPUT_FORMAT_NRGB_8888 1 /* 32-bit/pixel, memory byte: [0]->pixel[0][B], [1]->pixel[0][G], [2]->pixel[0][R], [3]->invalid, [4]->pixel[1][B], ... */
-#define DBI_PIXEL_INPUT_FORMAT_BGRN_8888 2 /* 32-bit/pixel, memory byte: [0]->invalid, [1]->pixel[0][R], [2]->pixel[0][G], [3]->pixel[0][B], [4]->invalid, [5]->pixel[1][R], ... */
-#define DBI_PIXEL_INPUT_FORMAT_RGBN_8888 3 /* 32-bit/pixel, memory byte: [0]->invalid, [1]->pixel[0][B], [2]->pixel[0][G], [3]->pixel[0][R], [4]->invalid, [5]->pixel[1][B], ... */
-#define DBI_PIXEL_INPUT_FORMAT_BGR_888   4 /* 24-bit/pixel, memory byte: [0]->pixel[0][R], [1]->pixel[0][G], [2]->pixel[0][B], [3]->pixel[1][R], [4]->pixel[1][G], ... */
-#define DBI_PIXEL_INPUT_FORMAT_RGB_888   5 /* 24-bit/pixel, memory byte: [0]->pixel[0][B], [1]->pixel[0][G], [2]->pixel[0][R], [3]->pixel[1][B], [4]->pixel[1][G], ... */
-#define DBI_PIXEL_INPUT_FORMAT_BGR_565   6 /* 16-bit/pixel, */
-#define DBI_PIXEL_INPUT_FORMAT_RGB_565   7 /* 16-bit/pixel, */
-#define DBI_PIXEL_INPUT_FORMAT_NVUY      8 /* 32-bit/pixel, memory byte: [0]->pixel[0][Y], [1]->pixel[0][U], [2]->pixel[0][V], [3]->invalid, [4]->pixel[1][Y], ... */
-#define DBI_PIXEL_INPUT_FORMAT_NYUV      9 /* 32-bit/pixel, memory byte: [0]->pixel[0][V], [1]->pixel[0][U], [2]->pixel[0][Y], [3]->invalid, [4]->pixel[1][V], ... */
-#define DBI_PIXEL_INPUT_FORMAT_VUYN      10 /* 32-bit/pixel, memory byte: [0]->invalid, [1]->pixel[0][Y], [2]->pixel[0][U], [3]->pixel[0][V], [4]->invalid, [5]->pixel[1][Y], ... */
-#define DBI_PIXEL_INPUT_FORMAT_YUVN      11 /* 32-bit/pixel, memory byte: [0]->invalid, [1]->pixel[0][V], [2]->pixel[0][U], [3]->pixel[0][Y], [4]->invalid, [5]->pixel[1][V], ... */
-#define DBI_PIXEL_INPUT_FORMAT_VUY444    12 /* 24-bit/pixel, memory byte: [0]->pixel[0][Y], [1]->pixel[0][U], [2]->pixel[0][V], [3]->pixel[1][Y], [4]->pixel[1][U], ... */
-#define DBI_PIXEL_INPUT_FORMAT_YUV444    13 /* 24-bit/pixel, memory byte: [0]->pixel[0][V], [1]->pixel[0][U], [2]->pixel[0][Y], [3]->pixel[1][V], [4]->pixel[1][U], ... */
-#define DBI_PIXEL_INPUT_FORMAT_YUYV      14 /* 16-bit/pixel, memory byte: [0]->pixel[0][Y], [1]->pixel[0/1][U], [2]->pixel[1][Y], [3]->pixel[0/1][V], [4]->pixel[2][Y], ... */
-#define DBI_PIXEL_INPUT_FORMAT_YVYU      15 /* 16-bit/pixel, memory byte: [0]->pixel[0][Y], [1]->pixel[0/1][V], [2]->pixel[1][Y], [3]->pixel[0/1][U], [4]->pixel[2][Y], ... */
-#define DBI_PIXEL_INPUT_FORMAT_UYVY      16 /* 16-bit/pixel, memory byte: [0]->pixel[0/1][U], [1]->pixel[0][Y], [2]->pixel[0/1][V], [3]->pixel[1][Y], [4]->pixel[2/3][U], ... */
-#define DBI_PIXEL_INPUT_FORMAT_VYUY      17 /* 16-bit/pixel, memory byte: [0]->pixel[0/1][V], [1]->pixel[0][Y], [2]->pixel[0/1][U], [3]->pixel[1][Y], [4]->pixel[2/3][V], ... */
+#define DBI_PIXEL_INPUT_FORMAT_NBGR_8888 \
+    0 /* 32-bit/pixel, memory byte: [0]->pixel[0][R], [1]->pixel[0][G], [2]->pixel[0][B], [3]->invalid, [4]->pixel[1][R], ... */
+#define DBI_PIXEL_INPUT_FORMAT_NRGB_8888 \
+    1 /* 32-bit/pixel, memory byte: [0]->pixel[0][B], [1]->pixel[0][G], [2]->pixel[0][R], [3]->invalid, [4]->pixel[1][B], ... */
+#define DBI_PIXEL_INPUT_FORMAT_BGRN_8888 \
+    2 /* 32-bit/pixel, memory byte: [0]->invalid, [1]->pixel[0][R], [2]->pixel[0][G], [3]->pixel[0][B], [4]->invalid, [5]->pixel[1][R], ... */
+#define DBI_PIXEL_INPUT_FORMAT_RGBN_8888 \
+    3 /* 32-bit/pixel, memory byte: [0]->invalid, [1]->pixel[0][B], [2]->pixel[0][G], [3]->pixel[0][R], [4]->invalid, [5]->pixel[1][B], ... */
+#define DBI_PIXEL_INPUT_FORMAT_BGR_888 \
+    4 /* 24-bit/pixel, memory byte: [0]->pixel[0][R], [1]->pixel[0][G], [2]->pixel[0][B], [3]->pixel[1][R], [4]->pixel[1][G], ... */
+#define DBI_PIXEL_INPUT_FORMAT_RGB_888 \
+    5 /* 24-bit/pixel, memory byte: [0]->pixel[0][B], [1]->pixel[0][G], [2]->pixel[0][R], [3]->pixel[1][B], [4]->pixel[1][G], ... */
+#define DBI_PIXEL_INPUT_FORMAT_BGR_565 6 /* 16-bit/pixel, */
+#define DBI_PIXEL_INPUT_FORMAT_RGB_565 7 /* 16-bit/pixel, */
+#define DBI_PIXEL_INPUT_FORMAT_NVUY \
+    8 /* 32-bit/pixel, memory byte: [0]->pixel[0][Y], [1]->pixel[0][U], [2]->pixel[0][V], [3]->invalid, [4]->pixel[1][Y], ... */
+#define DBI_PIXEL_INPUT_FORMAT_NYUV \
+    9 /* 32-bit/pixel, memory byte: [0]->pixel[0][V], [1]->pixel[0][U], [2]->pixel[0][Y], [3]->invalid, [4]->pixel[1][V], ... */
+#define DBI_PIXEL_INPUT_FORMAT_VUYN \
+    10 /* 32-bit/pixel, memory byte: [0]->invalid, [1]->pixel[0][Y], [2]->pixel[0][U], [3]->pixel[0][V], [4]->invalid, [5]->pixel[1][Y], ... */
+#define DBI_PIXEL_INPUT_FORMAT_YUVN \
+    11 /* 32-bit/pixel, memory byte: [0]->invalid, [1]->pixel[0][V], [2]->pixel[0][U], [3]->pixel[0][Y], [4]->invalid, [5]->pixel[1][V], ... */
+#define DBI_PIXEL_INPUT_FORMAT_VUY444 \
+    12 /* 24-bit/pixel, memory byte: [0]->pixel[0][Y], [1]->pixel[0][U], [2]->pixel[0][V], [3]->pixel[1][Y], [4]->pixel[1][U], ... */
+#define DBI_PIXEL_INPUT_FORMAT_YUV444 \
+    13 /* 24-bit/pixel, memory byte: [0]->pixel[0][V], [1]->pixel[0][U], [2]->pixel[0][Y], [3]->pixel[1][V], [4]->pixel[1][U], ... */
+#define DBI_PIXEL_INPUT_FORMAT_YUYV \
+    14 /* 16-bit/pixel, memory byte: [0]->pixel[0][Y], [1]->pixel[0/1][U], [2]->pixel[1][Y], [3]->pixel[0/1][V], [4]->pixel[2][Y], ... */
+#define DBI_PIXEL_INPUT_FORMAT_YVYU \
+    15 /* 16-bit/pixel, memory byte: [0]->pixel[0][Y], [1]->pixel[0/1][V], [2]->pixel[1][Y], [3]->pixel[0/1][U], [4]->pixel[2][Y], ... */
+#define DBI_PIXEL_INPUT_FORMAT_UYVY \
+    16 /* 16-bit/pixel, memory byte: [0]->pixel[0/1][U], [1]->pixel[0][Y], [2]->pixel[0/1][V], [3]->pixel[1][Y], [4]->pixel[2/3][U], ... */
+#define DBI_PIXEL_INPUT_FORMAT_VYUY \
+    17 /* 16-bit/pixel, memory byte: [0]->pixel[0/1][V], [1]->pixel[0][Y], [2]->pixel[0/1][U], [3]->pixel[1][Y], [4]->pixel[2/3][V], ... */
 /**
   * @}
   */
@@ -78,8 +94,8 @@
 /** @defgroup DBI_PIXEL_OUTPUT_FORMAT dbi output pixel format definition
   * @{
   */
-#define DBI_PIXEL_OUTPUT_FORMAT_RGB_565  0 /* 16-bit/pixel */
-#define DBI_PIXEL_OUTPUT_FORMAT_RGB_888  1 /* 24-bit/pixel, Compatible with RGB666 format */
+#define DBI_PIXEL_OUTPUT_FORMAT_RGB_565 0 /* 16-bit/pixel */
+#define DBI_PIXEL_OUTPUT_FORMAT_RGB_888 1 /* 24-bit/pixel, Compatible with RGB666 format */
 /**
   * @}
   */
@@ -87,10 +103,10 @@
 /** @defgroup DBI_CLOCK_MODE dbi clock phase and polarity definition
   * @{
   */
-#define DBI_CLOCK_MODE_0                 0 /* CPOL=0 CHPHA=0 */
-#define DBI_CLOCK_MODE_1                 1 /* CPOL=0 CHPHA=1 */
-#define DBI_CLOCK_MODE_2                 2 /* CPOL=1 CHPHA=0 */
-#define DBI_CLOCK_MODE_3                 3 /* CPOL=1 CHPHA=1 */
+#define DBI_CLOCK_MODE_0                0 /* CPOL=0 CHPHA=0 */
+#define DBI_CLOCK_MODE_1                1 /* CPOL=0 CHPHA=1 */
+#define DBI_CLOCK_MODE_2                2 /* CPOL=1 CHPHA=0 */
+#define DBI_CLOCK_MODE_3                3 /* CPOL=1 CHPHA=1 */
 /**
   * @}
   */
@@ -98,8 +114,8 @@
 /** @defgroup DBI_QSPI_WIRE_NUM dbi qspi wire num definition
   * @{
   */
-#define DBI_QSPI_WIRE_NUM_1              0 /* 1-wire mode */
-#define DBI_QSPI_WIRE_NUM_4              1 /* 4-wire mode */
+#define DBI_QSPI_WIRE_NUM_1             0 /* 1-wire mode */
+#define DBI_QSPI_WIRE_NUM_4             1 /* 4-wire mode */
 /**
   * @}
   */
@@ -107,9 +123,9 @@
 /** @defgroup DBI_INTSTS dbi interrupt status definition
   * @{
   */
-#define DBI_INTSTS_TC                    (1 << 0)
-#define DBI_INTSTS_TX_FIFO               (1 << 1)
-#define DBI_INTSTS_FIFO_ERR              (1 << 2)
+#define DBI_INTSTS_TC                   (1 << 0)
+#define DBI_INTSTS_TX_FIFO              (1 << 1)
+#define DBI_INTSTS_FIFO_ERR             (1 << 2)
 /**
   * @}
   */
@@ -117,7 +133,7 @@
 /** @defgroup DBI_INTCLR dbi interrupt clear definition
   * @{
   */
-#define DBI_INTCLR_TC                    (1 << 0)
+#define DBI_INTCLR_TC                   (1 << 0)
 /**
   * @}
   */
@@ -125,14 +141,14 @@
 /** @defgroup DBI_CMD dbi feature control cmd definition
   * @{
   */
-#define DBI_CMD_CLEAR_TX_FIFO            (0x01)
-#define DBI_CMD_GET_TX_FIFO_CNT          (0x02)
-#define DBI_CMD_MASK_CMD_PHASE           (0x03)
-#define DBI_CMD_CS_CONTINUE              (0x04)
-#define DBI_CMD_SET_DUMMY_CNT            (0x05)
-#define DBI_CMD_GET_SIZE_OF_PIXEL_CNT    (0x06)
-#define DBI_CMD_INPUT_PIXEL_FORMAT       (0x07)
-#define DBI_CMD_OUTPUT_PIXEL_FORMAT      (0x08)
+#define DBI_CMD_CLEAR_TX_FIFO           (0x01)
+#define DBI_CMD_GET_TX_FIFO_CNT         (0x02)
+#define DBI_CMD_MASK_CMD_PHASE          (0x03)
+#define DBI_CMD_CS_CONTINUE             (0x04)
+#define DBI_CMD_SET_DUMMY_CNT           (0x05)
+#define DBI_CMD_GET_SIZE_OF_PIXEL_CNT   (0x06)
+#define DBI_CMD_INPUT_PIXEL_FORMAT      (0x07)
+#define DBI_CMD_OUTPUT_PIXEL_FORMAT     (0x08)
 #if (DBI_QSPI_SUPPORT)
 #define DBI_CMD_YUV_TO_RGB_ENABLE (0x10)
 #endif
@@ -142,11 +158,9 @@
   */
 
 // clang-format off
-#if (DBI_QSPI_SUPPORT)
+/* QSPI mode (DBI_MODE_EX_QSPI) is only available on chips with
+   DBI_QSPI_SUPPORT, so the valid modes end at Type C 3-wire either way */
 #define IS_DBI_MODE(type)      ((type) <= DBI_MODE_TYPE_C_3_WIRE)
-#else
-#define IS_DBI_MODE(type)      ((type) <= DBI_MODE_EX_QSPI)
-#endif
 
 #define IS_DBI_PIXEL_INPUT_FORMAT(type)      ((type) <= DBI_PIXEL_INPUT_FORMAT_VYUY)
 
