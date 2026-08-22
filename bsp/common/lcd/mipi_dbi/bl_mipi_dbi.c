@@ -10,10 +10,14 @@
 #include "bflb_gpio.h"
 #include "bflb_l1c.h"
 
-#if defined (BL606P) || defined (BL628) ||defined(BL702L) || defined(BL702) || defined(BL808)
+#if defined(BL606P) || defined(BL628) || defined(BL702L) || defined(BL702) || defined(BL808)
 #include "board.h"
 #else
 #include "board_gpio.h"
+#endif
+
+#if defined(BL808)
+#include "bl808_glb.h"
 #endif
 
 #if ((LCD_DBI_WORK_MODE == 4) && (DBI_QSPI_SUPPORT == 0))
@@ -23,8 +27,8 @@
 #define LCD_DBI_DMA_LLI_NUM (DBI_DBI_DATA_SIZE_MAX / 4 / 4064 + 1)
 
 /* clock frequency limit */
-#if (defined(BL616L) || defined(BL616D))
-/* Bus clock: 160M */
+#if (defined(BL616L) || defined(BL616D) || defined(BL808))
+/* Bus clock: 160M (BL808: mm muxpll 160m) */
 #if (LCD_DBI_WORK_MODE == 3) /* typeB */
 #define LCD_DBI_CLOCK_LIMIT (54 * 1000 * 1000)
 #else /* typeC/QSPI */
@@ -48,6 +52,57 @@ static volatile bool dbi_async_callback_en_flag = true;
 static struct bflb_device_s *dbi_dma_hd;
 /* pec dbi typeB device */
 static struct bflb_device_s *dbi_hd;
+
+#if defined(BL808)
+/*
+ * The BL808 DBI lives in the multimedia clock/reset domain.  Before the
+ * LHAL driver touches the peripheral the 160 MHz mm clock must be enabled,
+ * the MIPI/display block reset and, in Type C mode, the GPIO function-23
+ * group routed to the Type C pads.
+ */
+static void bl808_dbi_soc_init(uint8_t dbi_mode)
+{
+    uint32_t reg;
+
+    /* Enable the legacy PLL post-divider as well as the MM-domain 160 MHz
+     * clock gate. Keeping both paths enabled avoids depending on boot-ROM
+     * clock state. */
+    reg = BL_RD_REG(MM_GLB_BASE, MM_GLB_CLKIP_POSTDIV);
+    reg = BL_SET_REG_BIT(reg, MM_GLB_REG_CLKPLL_EN_160M_CLK);
+    BL_WR_REG(MM_GLB_BASE, MM_GLB_CLKIP_POSTDIV, reg);
+
+    reg = BL_RD_REG(GLB_BASE, GLB_CGEN_CFG3);
+    reg = BL_SET_REG_BIT(reg, GLB_CGEN_MM_WIFIPLL_160M);
+    BL_WR_REG(GLB_BASE, GLB_CGEN_CFG3, reg);
+
+    /* Select WIFIPLL 160 MHz (selector value 0) for mm_muxpll_160m. */
+    reg = BL_RD_REG(GLB_BASE, GLB_DIG_CLK_CFG1);
+    reg = BL_CLR_REG_BIT(reg, GLB_REG_MM_MUXPLL_160M_SEL);
+    BL_WR_REG(GLB_BASE, GLB_DIG_CLK_CFG1, reg);
+
+    /* DBI is in the multimedia clock/reset domain. */
+    reg = BL_RD_REG(MM_GLB_BASE, MM_GLB_MM_CLK_CTRL_CPU);
+    reg = BL_SET_REG_BIT(reg, MM_GLB_REG_PLL_EN);
+    reg = BL_SET_REG_BIT(reg, MM_GLB_REG_CPU_CLK_EN);
+    reg = BL_SET_REG_BIT(reg, MM_GLB_REG_BCLK_EN);
+    reg = BL_SET_REG_BIT(reg, MM_GLB_REG_MM_CPU_CLK_EN);
+    reg = BL_SET_REG_BIT(reg, MM_GLB_REG_MMCPU0_CLK_EN);
+    BL_WR_REG(MM_GLB_BASE, MM_GLB_MM_CLK_CTRL_CPU, reg);
+
+    __asm__ volatile("fence iorw, iorw" ::: "memory");
+
+    /* DBI shares the MIPI/display reset line. Pulsing it also recovers a DBI
+     * instance left busy by an earlier failed transfer. */
+    GLB_AHB_DSP_Software_Reset(GLB_AHB_DSP_SW_SWRST_MIPI);
+
+    if (dbi_mode != DBI_MODE_TYPE_B) {
+        /* Route the GPIO function-23 (DBI Type C) group to Type C pads. */
+        reg = BL_RD_REG(GLB_BASE, GLB_PARM_CFG0);
+        reg = BL_SET_REG_BIT(reg, GLB_REG_SEL_DBI_TYPE_C);
+        BL_WR_REG(GLB_BASE, GLB_PARM_CFG0, reg);
+    }
+}
+#endif /* defined(BL808) */
 
 /* The memory space of DMA */
 static struct bflb_dma_channel_lli_pool_s dma_tx_llipool[LCD_DBI_DMA_LLI_NUM];
@@ -179,6 +234,9 @@ int lcd_dbi_init(lcd_dbi_init_t *dbi_parra)
 
     /* dbi init */
     dbi_hd = bflb_device_get_by_name("dbi");
+#if defined(BL808)
+    bl808_dbi_soc_init(dbi_cfg.dbi_mode);
+#endif
     bflb_dbi_init(dbi_hd, &dbi_cfg);
     /* cs continuous mode */
     bflb_dbi_feature_control(dbi_hd, DBI_CMD_CS_CONTINUE, true);
