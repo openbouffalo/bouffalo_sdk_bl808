@@ -334,7 +334,10 @@ int bflb_dbi_send_cmd_data(struct bflb_device_s *dev, uint8_t cmd, uint8_t data_
         if (chunk) {
             wdata = 0;
             for (idx = 0; idx < chunk; idx++) {
-                wdata |= ((uint32_t)*data_buff++) << (8 * idx);
+                uint8_t data = *data_buff++;
+                // wdata |= ((uint32_t)data) << (8 * idx);
+                wdata <<= 8;
+                wdata |= data;
             }
             putreg32(wdata, reg_base + DBI_WDATA_OFFSET);
         }
@@ -498,6 +501,7 @@ int bflb_dbi_send_cmd_pixel(struct bflb_device_s *dev, uint8_t cmd, uint32_t pix
 
 void bflb_dbi_link_txdma(struct bflb_device_s *dev, bool enable)
 {
+    printf("bflb_dbi_link_txdma - en %d\n", enable ? 1 : 0);
     uint32_t reg_base;
     uint32_t regval;
 
