@@ -26,8 +26,9 @@ int bflb_peripheral_reset_by_id(uint8_t peri)
             rst_num = 22;
             break;
         case BFLB_PERIPHERAL_DMA2:
-            rst_num = 24;
-            break;
+            /* DMA2 is the MMSYS-local DMA controller and lives in the
+             * DSP-domain reset group, not the MCU AHB group used below. */
+            return GLB_AHB_DSP_Software_Reset(GLB_AHB_DSP_SW_SWRST_DMA);
         case BFLB_PERIPHERAL_GLB:
             rst_num = 32;
             break;
