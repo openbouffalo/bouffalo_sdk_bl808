@@ -267,6 +267,32 @@ int bflb_dbi_send_cmd_read_data(struct bflb_device_s *dev, uint8_t cmd, uint8_t 
  */
 int bflb_dbi_send_cmd_pixel(struct bflb_device_s *dev, uint8_t cmd, uint32_t pixel_cnt, void *pixel_buff);
 
+#if defined(BL808)
+/**
+ * @brief Configure the command/pixel-count/pixel-mode registers and clear
+ *        the TX FIFO for a pixel transfer, without starting the
+ *        transaction. Used by DMA-driven transfers so the DMA channel can
+ *        be started (and can begin feeding the FIFO) before the DBI shift
+ *        engine is triggered with bflb_dbi_pixel_transfer_start().
+ *
+ * @param [in] dev device handle
+ * @param [in] cmd command
+ * @param [in] pixel_cnt Number of pixels
+ * @return true if there is a command/pixel phase to send, false if there is
+ *         nothing to do (caller must not call bflb_dbi_pixel_transfer_start())
+ */
+bool bflb_dbi_pixel_transfer_prepare(struct bflb_device_s *dev, uint8_t cmd, uint32_t pixel_cnt);
+
+/**
+ * @brief Start (trigger) a transaction previously set up with
+ *        bflb_dbi_pixel_transfer_prepare(). For DMA-driven transfers this
+ *        must only be called after the DMA channel has been started.
+ *
+ * @param [in] dev device handle
+ */
+void bflb_dbi_pixel_transfer_start(struct bflb_device_s *dev);
+#endif
+
 /**
  * @brief Enable dbi tx dma.
  *

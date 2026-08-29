@@ -543,7 +543,6 @@ int bflb_dbi_send_cmd_pixel(struct bflb_device_s *dev, uint8_t cmd, uint32_t pix
 
 void bflb_dbi_link_txdma(struct bflb_device_s *dev, bool enable)
 {
-    printf("bflb_dbi_link_txdma - en %d\n", enable ? 1 : 0);
     uint32_t reg_base;
     uint32_t regval;
 
