@@ -28,7 +28,7 @@ int lcd_dbi_init(lcd_dbi_init_t *dbi_parra);
 int lcd_dbi_ex_qspi_addr_cfg(uint8_t addr_byte_size, uint32_t addr_val);
 #endif
 
-int lcd_dbi_transmit_cmd_para(uint8_t cmd, uint32_t *para, size_t para_num);
+int lcd_dbi_transmit_cmd_para(uint8_t cmd, uint8_t *para, size_t para_num);
 int lcd_dbi_transmit_cmd_pixel_sync(uint8_t cmd, uint32_t *pixel, size_t pixel_num);
 int lcd_dbi_transmit_cmd_pixel_fill_sync(uint8_t cmd, uint32_t pixel_val, size_t pixel_num);
 
