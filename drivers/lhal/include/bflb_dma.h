@@ -290,7 +290,10 @@
 #define DMA_REQUEST_I2C1_TX  0x0000000F
 #define DMA_REQUEST_I2S_RX   0x00000010
 #define DMA_REQUEST_I2S_TX   0x00000011
-#define DMA_REQUEST_DBI_TX   0x00000014
+/* DBI is only reachable on MMSYS DMA2 (idx == 2); request numbering is
+ * controller-local, so this intentionally overlaps DMA_REQUEST_ADC, which
+ * is only used on DMA0/DMA1. */
+#define DMA_REQUEST_DBI_TX   0x00000016
 #define DMA_REQUEST_ADC      0x00000016
 #define DMA_REQUEST_DAC      0x00000017
 
