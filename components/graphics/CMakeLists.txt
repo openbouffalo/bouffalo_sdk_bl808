@@ -1,4 +1,3 @@
-sdk_add_subdirectory_ifdef(CONFIG_LVGL8 lvgl_v8)
 
 sdk_add_subdirectory_ifdef(CONFIG_LVGL9 lvgl_v9)
 
