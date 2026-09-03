@@ -20,8 +20,13 @@ ifneq ($(IS_WSL2),)
 else
 	# Native Linux or others
 	UNAME_S = $(shell uname -s)
+	UNAME_M = $(shell uname -m)
 	ifeq ($(UNAME_S),Linux)
-		FLASH_CMD = $(BL_SDK_BASE)/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-ubuntu
+		ifeq ($(UNAME_M),aarch64)
+			FLASH_CMD = $(BL_SDK_BASE)/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-ubuntu-aarch64
+		else
+			FLASH_CMD = $(BL_SDK_BASE)/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-ubuntu
+		endif
 	else
 		FLASH_CMD = $(BL_SDK_BASE)/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand.exe
 	endif
@@ -38,6 +43,6 @@ flash: whole
 	$(FLASH_CMD) --chip=$(CHIP) --port $(COMX) --whole_chip --firmware $(BUILD_DIR)/whole_flash_data.bin
 
 ota: whole
-	$(BL_SDK_BASE)/tools/bflb_tools/bflb_fw_post_proc/bflb_fw_post_proc-ubuntu --chipname=$(CHIP) --imgfile=$(BUILD_DIR)/$(APP_NAME)_$(CHIP).bin --appkeys=shared --brdcfgdir=$(BL_SDK_BASE)/bsp/board/$(BOARD)/config
+	$(BL_SDK_BASE)/tools/bflb_tools/bflb_fw_post_proc/bflb_fw_post_proc$(if $(filter aarch64,$(UNAME_M)),-ubuntu-aarch64,-ubuntu) --chipname=$(CHIP) --imgfile=$(BUILD_DIR)/$(APP_NAME)_$(CHIP).bin --appkeys=shared --brdcfgdir=$(BL_SDK_BASE)/bsp/board/$(BOARD)/config
 
 .PHONY: clean
