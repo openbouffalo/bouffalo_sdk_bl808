@@ -47,7 +47,7 @@ else
 		cmake_generator = "Unix Makefiles"
 	else ifeq ($(shell arch),aarch64)
 		CMAKE = cmake # use user cmake
-		BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-arm
+		BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-ubuntu-aarch64
 		PUNCOVER_PROGRAM = puncover_riscv
 		cmake_generator = "Unix Makefiles"
 	else ifeq ($(patsubst %WSL2,WSL2,$(shell uname -r)), WSL2)
