@@ -331,6 +331,33 @@ void *bflb_get_no_cache_addr(const void *addr)
 
     return NULL;
 }
+#elif defined(BL808) && defined(CPU_D0)
+bool bflb_check_cache_addr(const void *addr)
+{
+    uintptr_t a = (uintptr_t)addr;
+
+    /* D0's local SRAM (itcm/dtcm/ram/heap, per the flash_d0.ld memory map)
+     * lives in the 512KB block based at 0x3eff0000 and is covered by the
+     * D0 core's D-cache. Unlike the M0 core, D0 has no separate
+     * cacheable/non-cacheable physical alias for this block -- cache
+     * coherency with other bus masters (e.g. DMA) must be maintained with
+     * explicit clean/invalidate operations instead of address aliasing. */
+    if (a >= 0x3EFF0000UL && a < (0x3EFF0000UL + 0x80000UL)) {
+        return true;
+    }
+    return false;
+}
+void *bflb_get_no_cache_addr(const void *addr)
+{
+    /* No non-cacheable alias exists on D0; the address is unchanged and
+     * callers must rely on explicit cache maintenance for coherency. */
+    return (void *)addr;
+}
+#else
+bool bflb_check_cache_addr(const void *addr)
+{
+    return false;
+}
 #endif
 
 #if (defined(BL616) || defined(BL616L) || defined(BL616D) || defined(BL606P) || defined(BL808) || defined(BL628)) && !defined(CPU_LP)

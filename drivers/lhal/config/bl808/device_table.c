@@ -52,6 +52,17 @@ struct bflb_device_s bl808_device_table[] = {
       .idx = 0,
       .dev_type = BFLB_DEVICE_TYPE_UART,
       .user_data = NULL },
+    { .name = BFLB_NAME_DBI,
+      .reg_base = DBI_BASE,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DBI,
+#else
+      .irq_num = 0xff,
+#endif
+      .idx = 0,
+      .sub_idx = 0,
+      .dev_type = BFLB_DEVICE_TYPE_DBI,
+      .user_data = NULL },
     { .name = BFLB_NAME_UART1,
       .reg_base = UART1_BASE,
 #if defined(CPU_M0) || defined(CPU_LP)
@@ -188,6 +199,101 @@ struct bflb_device_s bl808_device_table[] = {
       .irq_num = 0xff,
 #endif
       .idx = 0,
+      .sub_idx = 7,
+      .dev_type = BFLB_DEVICE_TYPE_DMA,
+      .user_data = NULL },
+    { .name = BFLB_NAME_DMA2_CH0,
+      .reg_base = DMA2_BASE + 1 * DMA_CHANNEL_OFFSET,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DMA2_INT0,
+#else
+      .irq_num = 0xff,
+#endif
+      .idx = 2,
+      .sub_idx = 0,
+      .dev_type = BFLB_DEVICE_TYPE_DMA,
+      .user_data = NULL },
+    { .name = BFLB_NAME_DMA2_CH1,
+      .reg_base = DMA2_BASE + 2 * DMA_CHANNEL_OFFSET,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DMA2_INT1,
+#else
+      .irq_num = 0xff,
+#endif
+
+      .idx = 2,
+      .sub_idx = 1,
+      .dev_type = BFLB_DEVICE_TYPE_DMA,
+      .user_data = NULL },
+    { .name = BFLB_NAME_DMA2_CH2,
+      .reg_base = DMA2_BASE + 3 * DMA_CHANNEL_OFFSET,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DMA2_INT2,
+#else
+      .irq_num = 0xff,
+#endif
+
+      .idx = 2,
+      .sub_idx = 2,
+      .dev_type = BFLB_DEVICE_TYPE_DMA,
+      .user_data = NULL },
+    { .name = BFLB_NAME_DMA2_CH3,
+      .reg_base = DMA2_BASE + 4 * DMA_CHANNEL_OFFSET,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DMA2_INT3,
+#else
+      .irq_num = 0xff,
+#endif
+
+      .idx = 2,
+      .sub_idx = 3,
+      .dev_type = BFLB_DEVICE_TYPE_DMA,
+      .user_data = NULL },
+    { .name = BFLB_NAME_DMA2_CH4,
+      .reg_base = DMA2_BASE + 5 * DMA_CHANNEL_OFFSET,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DMA2_INT4,
+#else
+      .irq_num = 0xff,
+#endif
+
+      .idx = 2,
+      .sub_idx = 4,
+      .dev_type = BFLB_DEVICE_TYPE_DMA,
+      .user_data = NULL },
+    { .name = BFLB_NAME_DMA2_CH5,
+      .reg_base = DMA2_BASE + 6 * DMA_CHANNEL_OFFSET,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DMA2_INT5,
+#else
+      .irq_num = 0xff,
+#endif
+
+      .idx = 2,
+      .sub_idx = 5,
+      .dev_type = BFLB_DEVICE_TYPE_DMA,
+      .user_data = NULL },
+    { .name = BFLB_NAME_DMA2_CH6,
+      .reg_base = DMA2_BASE + 7 * DMA_CHANNEL_OFFSET,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DMA2_INT6,
+#else
+      .irq_num = 0xff,
+#endif
+
+      .idx = 2,
+      .sub_idx = 6,
+      .dev_type = BFLB_DEVICE_TYPE_DMA,
+      .user_data = NULL },
+    { .name = BFLB_NAME_DMA2_CH7,
+      .reg_base = DMA2_BASE + 8 * DMA_CHANNEL_OFFSET,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DMA2_INT7,
+#else
+      .irq_num = 0xff,
+#endif
+
+      .idx = 2,
       .sub_idx = 7,
       .dev_type = BFLB_DEVICE_TYPE_DMA,
       .user_data = NULL },
@@ -552,6 +658,17 @@ struct bflb_device_s bl808_device_table[] = {
       .sub_idx = 0,
       .dev_type = BFLB_DEVICE_TYPE_SEC_PKA,
       .user_data = NULL },
+    { .name = BFLB_NAME_DBI,
+      .reg_base = DBI_BASE,
+#if defined(CPU_D0)
+      .irq_num = BL808_IRQ_DBI,
+#else
+      .irq_num = 0xff,
+#endif
+      .idx = 0,
+      .sub_idx = 0,
+      .dev_type = BFLB_DEVICE_TYPE_DBI,
+      .user_data = NULL },
     { .name = BFLB_NAME_WDT,
       .reg_base = TIMER0_BASE,
 #if defined(CPU_M0) || defined(CPU_LP)
@@ -573,6 +690,7 @@ struct bflb_device_s *bflb_device_get_by_name(const char *name)
             return &bl808_device_table[i];
         }
     }
+    printf("FAILED TO FIND DEVICE `%s` in device table \r\n", name);
     LHAL_PARAM_ASSERT(0);
     bflb_lhal_assert_func(__FILE__, __LINE__, __func__, name);
     return NULL;

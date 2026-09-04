@@ -17,6 +17,10 @@ uint32_t bflb_clk_get_peripheral_clock(uint8_t type, uint8_t idx)
         return Clock_Peripheral_Clock_Get(BL_PERIPHERAL_CLOCK_I2C0);
     } else if (type == BFLB_DEVICE_TYPE_SDH) {
         return Clock_Peripheral_Clock_Get(BL_PERIPHERAL_CLOCK_SDH);
+    } else if (type == BFLB_DEVICE_TYPE_DBI) {
+        /* DBI is clocked by the multimedia mm_muxpll_160m clock, which is
+           either the WIFIPLL 160M or the CPU PLL 160M output: 160MHz */
+        return 160 * 1000 * 1000;
     }
     return 0;
 }
@@ -140,7 +144,7 @@ int ATTR_CLOCK_SECTION bflb_peripheral_clock_control_by_id(uint8_t peri, bool en
     uint32_t regval1 = getreg32(BFLB_GLB_CGEN1_BASE);
     uint32_t regval2 = getreg32(BFLB_GLB_CGEN2_BASE);
 
-    void (*bitop)(uint32_t*, int) = enable ? set_bit : clear_bit;
+    void (*bitop)(uint32_t *, int) = enable ? set_bit : clear_bit;
 
     switch (peri) {
         case BFLB_PERIPHERAL_CPU:
