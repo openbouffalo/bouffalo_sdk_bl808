@@ -14,8 +14,7 @@ extern "C" {
 #endif
 
 /* Init msc interface driver */
-struct usbd_interface *usbd_msc_init_intf(uint8_t busid, struct usbd_interface *intf,
-                                          const uint8_t out_ep,
+struct usbd_interface *usbd_msc_init_intf(uint8_t busid, struct usbd_interface *intf, const uint8_t out_ep,
                                           const uint8_t in_ep);
 
 void usbd_msc_get_cap(uint8_t busid, uint8_t lun, uint32_t *block_num, uint32_t *block_size);
@@ -24,6 +23,7 @@ int usbd_msc_sector_write(uint8_t busid, uint8_t lun, uint32_t sector, uint8_t *
 
 void usbd_msc_set_readonly(uint8_t busid, bool readonly);
 bool usbd_msc_get_popup(uint8_t busid);
+void usbd_msc_refresh_capacity(uint8_t busid);
 
 void usbd_msc_polling(uint8_t busid);
 
