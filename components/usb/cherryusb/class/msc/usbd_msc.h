@@ -25,6 +25,12 @@ int usbd_msc_sector_write(uint8_t busid, uint8_t lun, uint32_t sector, uint8_t *
 /* Re-query usbd_msc_get_cap() for all LUNs, e.g. after the media is (re)inserted */
 void usbd_msc_refresh_capacity(uint8_t busid);
 
+/* Present/remove the medium, like inserting/removing a card in a card reader.
+ * While not ready the host gets NOT READY / MEDIUM NOT PRESENT and cannot
+ * read or write. Becoming ready refreshes the capacity and raises a UNIT
+ * ATTENTION so the host re-reads it. Defaults to not ready. */
+void usbd_msc_set_media_ready(uint8_t busid, bool ready);
+
 void usbd_msc_set_readonly(uint8_t busid, bool readonly);
 bool usbd_msc_get_popup(uint8_t busid);
 

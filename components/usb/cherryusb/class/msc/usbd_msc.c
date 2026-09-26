@@ -37,6 +37,8 @@ USB_NOCACHE_RAM_SECTION struct usbd_msc_priv {
 
     USB_MEM_ALIGNX bool readonly;
     bool popup;
+    volatile bool media_ready;   /* false: report "medium not present" (card owned by the application) */
+    volatile bool media_changed; /* report one UNIT ATTENTION after the medium becomes ready */
     uint8_t sKey; /* Sense key */
     uint8_t ASC;  /* Additional Sense Code */
     uint8_t ASQ;  /* Additional Sense Qualifier */
@@ -130,6 +132,8 @@ void msc_storage_notify_handler(uint8_t busid, uint8_t event, void *arg)
             break;
         case USBD_EVENT_RESET:
             usbd_msc_reset(busid);
+            /* a new session starts after a bus reset, forget an earlier eject */
+            g_usbd_msc[busid].popup = false;
             break;
         case USBD_EVENT_CONFIGURED:
             USB_LOG_DBG("Start reading cbw\r\n");
@@ -739,6 +743,28 @@ static bool SCSI_CBWDecode(uint8_t busid, uint32_t nbytes)
         return false;
     } else {
         USB_LOG_DBG("Decode CB:0x%02x\r\n", g_usbd_msc[busid].cbw.CB[0]);
+
+        /* Behave like a card reader: without media only identification and
+         * removal commands succeed, everything else reports NOT READY. */
+        switch (g_usbd_msc[busid].cbw.CB[0]) {
+            case SCSI_CMD_INQUIRY:
+            case SCSI_CMD_REQUESTSENSE:
+            case SCSI_CMD_STARTSTOPUNIT:
+            case SCSI_CMD_PREVENTMEDIAREMOVAL:
+                break;
+            default:
+                if (!g_usbd_msc[busid].media_ready) {
+                    SCSI_SetSenseData(busid, SCSI_KCQNR_MEDIANOTPRESENT);
+                    return false;
+                }
+                if (g_usbd_msc[busid].media_changed) {
+                    g_usbd_msc[busid].media_changed = false;
+                    SCSI_SetSenseData(busid, SCSI_KCQUA_NOTREADYTOTRANSITION);
+                    return false;
+                }
+                break;
+        }
+
         switch (g_usbd_msc[busid].cbw.CB[0]) {
             case SCSI_CMD_TESTUNITREADY:
                 ret = SCSI_testUnitReady(busid, &buf2send, &len2send);
@@ -971,6 +997,16 @@ void usbd_msc_refresh_capacity(uint8_t busid)
     for (uint8_t i = 0u; i <= g_usbd_msc[busid].max_lun; i++) {
         usbd_msc_get_cap(busid, i, &g_usbd_msc[busid].scsi_blk_nbr[i], &g_usbd_msc[busid].scsi_blk_size[i]);
     }
+}
+
+void usbd_msc_set_media_ready(uint8_t busid, bool ready)
+{
+    if (ready) {
+        usbd_msc_refresh_capacity(busid);
+        g_usbd_msc[busid].popup = false;
+        g_usbd_msc[busid].media_changed = true;
+    }
+    g_usbd_msc[busid].media_ready = ready;
 }
 
 void usbd_msc_set_readonly(uint8_t busid, bool readonly)

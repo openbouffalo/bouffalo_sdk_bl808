@@ -24,9 +24,27 @@
 #include "ff.h"     /* Obtains integer types */
 #include "diskio.h" /* Declarations of disk functions */
 #include "sdh_sd.h"
+#include <string.h>
 
 struct sd_card_s sd_card;
 struct sdh_host_s sdh_host;
+
+/*
+ * The SDH ADMA2 engine rejects buffers that are not USDHC_ADMA2_ADDRESS_ALIGN
+ * aligned. FatFs passes the caller's f_read()/f_write() buffer straight to the
+ * disk layer for whole-sector transfers, at an offset that depends on the file
+ * position, so it can be arbitrarily aligned. Such transfers are staged through
+ * this buffer. It is cache-line aligned and sized so D-cache maintenance on it
+ * cannot touch neighbouring data.
+ */
+#define MMC_BOUNCE_SECTORS 4
+#define MMC_BOUNCE_ALIGN   64
+__attribute__((aligned(MMC_BOUNCE_ALIGN))) static BYTE mmc_bounce_buf[SD_DEFAULT_BLOCK_SIZE * MMC_BOUNCE_SECTORS];
+
+static inline bool mmc_buf_is_aligned(const void *buff)
+{
+    return ((uintptr_t)buff % USDHC_ADMA2_ADDRESS_ALIGN) == 0;
+}
 
 int MMC_disk_status()
 {
@@ -52,8 +70,22 @@ int MMC_disk_initialize()
 
 int MMC_disk_read(BYTE *buff, LBA_t sector, UINT count)
 {
-    if (sdh_sd_read_blocks(&sd_card, (void *)buff, sector, count) < 0) {
-        return -1;
+    if (mmc_buf_is_aligned(buff)) {
+        if (sdh_sd_read_blocks(&sd_card, (void *)buff, sector, count) < 0) {
+            return -1;
+        }
+        return 0;
+    }
+
+    while (count > 0) {
+        UINT chunk = (count > MMC_BOUNCE_SECTORS) ? MMC_BOUNCE_SECTORS : count;
+        if (sdh_sd_read_blocks(&sd_card, (void *)mmc_bounce_buf, sector, chunk) < 0) {
+            return -1;
+        }
+        memcpy(buff, mmc_bounce_buf, chunk * SD_DEFAULT_BLOCK_SIZE);
+        buff += chunk * SD_DEFAULT_BLOCK_SIZE;
+        sector += chunk;
+        count -= chunk;
     }
 
     return 0;
@@ -61,8 +93,22 @@ int MMC_disk_read(BYTE *buff, LBA_t sector, UINT count)
 
 int MMC_disk_write(const BYTE *buff, LBA_t sector, UINT count)
 {
-    if (sdh_sd_write_blocks(&sd_card, (void *)buff, sector, count) < 0) {
-        return -1;
+    if (mmc_buf_is_aligned(buff)) {
+        if (sdh_sd_write_blocks(&sd_card, (void *)buff, sector, count) < 0) {
+            return -1;
+        }
+        return 0;
+    }
+
+    while (count > 0) {
+        UINT chunk = (count > MMC_BOUNCE_SECTORS) ? MMC_BOUNCE_SECTORS : count;
+        memcpy(mmc_bounce_buf, buff, chunk * SD_DEFAULT_BLOCK_SIZE);
+        if (sdh_sd_write_blocks(&sd_card, (void *)mmc_bounce_buf, sector, chunk) < 0) {
+            return -1;
+        }
+        buff += chunk * SD_DEFAULT_BLOCK_SIZE;
+        sector += chunk;
+        count -= chunk;
     }
 
     return 0;
