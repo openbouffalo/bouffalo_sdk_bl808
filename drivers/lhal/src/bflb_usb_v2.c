@@ -1184,16 +1184,24 @@ int usbd_ep_clear_stall(uint8_t busid, const uint8_t ep)
 
     uint8_t ep_idx = USB_EP_GET_IDX(ep);
 
+    /* ClearFeature(ENDPOINT_HALT) must also reset the data toggle to DATA0
+     * (USB 2.0 9.4.5). The controller doesn't do that itself, so pulse RSTG
+     * before clearing the stall, otherwise the host can drop the next packet
+     * (e.g. the MSC CSW) as a toggle mismatch. */
     if (ep_idx == 0) {
     } else {
         if (USB_EP_DIR_IS_OUT(ep)) {
             regval = getreg32(BFLB_USB_BASE + USB_DEV_OUTMPS1_OFFSET + (ep_idx - 1) * 4);
-            //regval &= ~USB_RSTG_OEP1;
+            regval |= USB_RSTG_OEP1;
+            putreg32(regval, BFLB_USB_BASE + USB_DEV_OUTMPS1_OFFSET + (ep_idx - 1) * 4);
+            regval &= ~USB_RSTG_OEP1;
             regval &= ~USB_STL_OEP1;
             putreg32(regval, BFLB_USB_BASE + USB_DEV_OUTMPS1_OFFSET + (ep_idx - 1) * 4);
         } else {
             regval = getreg32(BFLB_USB_BASE + USB_DEV_INMPS1_OFFSET + (ep_idx - 1) * 4);
-            //regval &= ~USB_RSTG_IEP1;
+            regval |= USB_RSTG_IEP1;
+            putreg32(regval, BFLB_USB_BASE + USB_DEV_INMPS1_OFFSET + (ep_idx - 1) * 4);
+            regval &= ~USB_RSTG_IEP1;
             regval &= ~USB_STL_IEP1;
             putreg32(regval, BFLB_USB_BASE + USB_DEV_INMPS1_OFFSET + (ep_idx - 1) * 4);
         }

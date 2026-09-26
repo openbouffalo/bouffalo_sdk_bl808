@@ -25,6 +25,7 @@ enum Stage {
     MSC_DATA_IN = 2,  /* Data In Phase */
     MSC_SEND_CSW = 3, /* Command Status Wrapper */
     MSC_WAIT_CSW = 4, /* Command Status Wrapper */
+    MSC_WAIT_CLR_HALT = 5, /* Command failed, CSW is sent once the host clears the IN halt */
 };
 
 /* Device data structure */
@@ -61,6 +62,8 @@ USB_NOCACHE_RAM_SECTION struct usbd_msc_priv {
 static void usbdev_msc_thread(CONFIG_USB_OSAL_THREAD_SET_ARGV);
 #endif
 
+static void usbd_msc_send_csw(uint8_t busid, uint8_t CSW_Status);
+
 static void usdb_msc_set_max_lun(uint8_t busid)
 {
     g_usbd_msc[busid].max_lun = CONFIG_USBDEV_MSC_MAX_LUN - 1u;
@@ -79,7 +82,9 @@ static int msc_storage_class_interface_request_handler(uint8_t busid, struct usb
 
     switch (setup->bRequest) {
         case MSC_REQUEST_RESET:
+            /* Bulk-Only Mass Storage Reset: get ready for the next CBW */
             usbd_msc_reset(busid);
+            usbd_ep_start_read(busid, mass_ep_data[busid][MSD_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_msc[busid].cbw, USB_SIZEOF_MSC_CBW);
             break;
 
         case MSC_REQUEST_GET_MAX_LUN:
@@ -130,19 +135,54 @@ void msc_storage_notify_handler(uint8_t busid, uint8_t event, void *arg)
             USB_LOG_DBG("Start reading cbw\r\n");
             usbd_ep_start_read(busid, mass_ep_data[busid][MSD_OUT_EP_IDX].ep_addr, (uint8_t *)&g_usbd_msc[busid].cbw, USB_SIZEOF_MSC_CBW);
             break;
+        case USBD_EVENT_CLR_HALT:
+            if (g_usbd_msc[busid].stage == MSC_WAIT_CLR_HALT) {
+                uint8_t stalled = 1;
+
+                usbd_ep_is_stalled(busid, mass_ep_data[busid][MSD_IN_EP_IDX].ep_addr, &stalled);
+                if (!stalled) {
+                    usbd_msc_send_csw(busid, CSW_STATUS_CMD_FAILED);
+                }
+            }
+            break;
 
         default:
             break;
     }
 }
 
+static bool usbd_msc_cbw_is_valid(uint8_t busid, uint32_t nbytes)
+{
+    return (nbytes == sizeof(struct CBW)) &&
+           (g_usbd_msc[busid].cbw.dSignature == MSC_CBW_Signature) &&
+           (g_usbd_msc[busid].cbw.bCBLength >= 1) &&
+           (g_usbd_msc[busid].cbw.bCBLength <= 16);
+}
+
+/* Invalid CBW (BOT spec 6.6.1): stall both bulk endpoints until the host
+ * performs Reset Recovery. The next CBW read is armed by MSC_REQUEST_RESET. */
 static void usbd_msc_bot_abort(uint8_t busid)
 {
-    if ((g_usbd_msc[busid].cbw.bmFlags == 0) && (g_usbd_msc[busid].cbw.dDataLength != 0)) {
-        usbd_ep_set_stall(busid, mass_ep_data[busid][MSD_OUT_EP_IDX].ep_addr);
-    }
+    usbd_ep_set_stall(busid, mass_ep_data[busid][MSD_OUT_EP_IDX].ep_addr);
     usbd_ep_set_stall(busid, mass_ep_data[busid][MSD_IN_EP_IDX].ep_addr);
-    usbd_ep_start_read(busid, mass_ep_data[busid][0].ep_addr, (uint8_t *)&g_usbd_msc[busid].cbw, USB_SIZEOF_MSC_CBW);
+}
+
+/* Valid CBW but the command failed or is unsupported (BOT spec 6.7): the host
+ * still expects a CSW with bCSWStatus = failed so it can issue REQUEST SENSE.
+ * Without it the host times out and falls back to a reset. */
+static void usbd_msc_cmd_failed(uint8_t busid)
+{
+    if (g_usbd_msc[busid].cbw.dDataLength == 0) {
+        usbd_msc_send_csw(busid, CSW_STATUS_CMD_FAILED);
+    } else if (g_usbd_msc[busid].cbw.bmFlags & 0x80) {
+        /* Host expects data-in: stall IN, send the CSW after the halt is cleared */
+        g_usbd_msc[busid].stage = MSC_WAIT_CLR_HALT;
+        usbd_ep_set_stall(busid, mass_ep_data[busid][MSD_IN_EP_IDX].ep_addr);
+    } else {
+        /* Host expects data-out: stall OUT, the CSW goes out on the (unstalled) IN pipe */
+        usbd_ep_set_stall(busid, mass_ep_data[busid][MSD_OUT_EP_IDX].ep_addr);
+        usbd_msc_send_csw(busid, CSW_STATUS_CMD_FAILED);
+    }
 }
 
 static void usbd_msc_send_csw(uint8_t busid, uint8_t CSW_Status)
@@ -771,8 +811,13 @@ void mass_storage_bulk_out(uint8_t busid, uint8_t ep, uint32_t nbytes)
     switch (g_usbd_msc[busid].stage) {
         case MSC_READ_CBW:
             if (SCSI_CBWDecode(busid, nbytes) == false) {
-                USB_LOG_ERR("Command: 0x%02x decode err\r\n", g_usbd_msc[busid].cbw.CB[0]);
-                usbd_msc_bot_abort(busid);
+                if (!usbd_msc_cbw_is_valid(busid, nbytes)) {
+                    USB_LOG_ERR("Invalid CBW (len %u)\r\n", (unsigned int)nbytes);
+                    usbd_msc_bot_abort(busid);
+                } else {
+                    USB_LOG_WRN("Command: 0x%02x failed\r\n", g_usbd_msc[busid].cbw.CB[0]);
+                    usbd_msc_cmd_failed(busid);
+                }
                 return;
             }
             break;

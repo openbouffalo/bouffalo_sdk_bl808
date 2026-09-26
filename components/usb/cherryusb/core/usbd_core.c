@@ -702,6 +702,7 @@ static bool usbd_std_endpoint_req_handler(uint8_t busid, struct usb_setup_packet
                 USB_LOG_ERR("ep:%02x clear halt\r\n", ep);
 
                 usbd_ep_clear_stall(busid, ep);
+                usbd_class_event_notify_handler(busid, USBD_EVENT_CLR_HALT, NULL);
                 break;
             } else {
                 ret = false;
