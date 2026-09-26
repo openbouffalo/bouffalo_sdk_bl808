@@ -708,25 +708,9 @@ static void ehci_check_qh(struct usbh_bus *bus, struct ehci_qh_hw *qhead, struct
     if (USB_GET_ENDPOINT_TYPE(urb->ep->bmAttributes) == USB_ENDPOINT_TYPE_INTERRUPT) {
         ehci_urb_waitup(bus, urb);
     } else {
-#if 0
         qh->remove_in_iaad = 1;
 
         EHCI_HCOR->usbcmd |= EHCI_USBCMD_IAAD;
-#else
-        qh->remove_in_iaad = 1;
-        EHCI_HCOR->usbsts = EHCI_USBSTS_IAA;
-        EHCI_HCOR->usbcmd |= EHCI_USBCMD_IAAD;
-        volatile uint32_t timeout = 0;
-        while (!(EHCI_HCOR->usbsts & EHCI_USBSTS_IAA)) {
-            timeout++;
-            if (timeout > 200000) {
-                USB_LOG_ERR("check_qh iaad timeout\r\n");
-                return;
-            }
-        }
-        EHCI_HCOR->usbsts = EHCI_USBSTS_IAA;
-        ehci_urb_waitup(bus, urb);
-#endif
     }
 }
 
@@ -789,6 +773,8 @@ int usb_hc_init(struct usbh_bus *bus)
 
     volatile uint32_t timeout = 0;
     uint32_t regval;
+
+    bus->hcd.roothub.speed = USB_SPEED_HIGH;
 
     memset(&g_ehci_hcd[bus->hcd.hcd_id], 0, sizeof(struct ehci_hcd));
     memset(ehci_qh_pool[bus->hcd.hcd_id], 0, sizeof(struct ehci_qh_hw) * CONFIG_USB_EHCI_QH_NUM);
@@ -1369,7 +1355,7 @@ int usbh_kill_urb(struct usbh_urb *urb)
         while (!(EHCI_HCOR->usbsts & EHCI_USBSTS_IAA)) {
             timeout++;
             if (timeout > 200000) {
-                USB_LOG_ERR("kill_urb iaad timeout\r\n");
+                USB_LOG_ERR("iaad timeout\r\n");
                 usb_osal_leave_critical_section(flags);
                 return -USB_ERR_TIMEOUT;
             }
