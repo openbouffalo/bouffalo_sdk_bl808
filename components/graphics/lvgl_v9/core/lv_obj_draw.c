@@ -302,6 +302,10 @@ void lv_obj_refresh_ext_draw_size(lv_obj_t * obj)
      *Zero is the default value if the spec. attr. are not defined.*/
     else if(s_new != 0) {
         lv_obj_allocate_spec_attr(obj);
+        if (obj->spec_attr == NULL) {
+            LV_LOG_ERROR("spec_attr alloc failed in lv_obj_refresh_ext_draw_size");
+            return;
+        }
         obj->spec_attr->ext_draw_size = s_new;
     }
 
