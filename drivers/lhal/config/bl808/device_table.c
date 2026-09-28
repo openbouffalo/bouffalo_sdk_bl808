@@ -329,6 +329,17 @@ struct bflb_device_s bl808_device_table[] = {
       .sub_idx = 0,
       .dev_type = BFLB_DEVICE_TYPE_I2C,
       .user_data = NULL },
+    { .name = BFLB_NAME_I2S0,
+      .reg_base = I2S_BASE,
+#if defined(CPU_M0) || defined(CPU_LP)
+      .irq_num = BL808_IRQ_I2S,
+#else
+      .irq_num = 0xff,
+#endif
+      .idx = 0,
+      .sub_idx = 0,
+      .dev_type = BFLB_DEVICE_TYPE_I2S,
+      .user_data = NULL },
     { .name = BFLB_NAME_TIMER0,
       .reg_base = TIMER0_BASE,
 #if defined(CPU_M0) || defined(CPU_LP)
