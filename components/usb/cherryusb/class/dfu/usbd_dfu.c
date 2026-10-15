@@ -8,6 +8,7 @@
 
 struct usbd_dfu_priv {
     uint8_t dfu_state;
+    uint8_t alt_setting; /* Current alternate setting (memory segment) */
 } g_usbd_dfu;
 
 const char *usbd_dfu_state_string[] = {
@@ -85,7 +86,7 @@ static int dfu_class_interface_request_handler(uint8_t busid, struct usb_setup_p
                         g_usbd_dfu.dfu_state = DFU_STATE_DFU_MANIFEST_SYNC;
                     } else {
                         usbd_dfu_begin_load();
-                        if (usbd_dfu_write(setup->wValue, *data, setup->wLength) < 0) {
+                        if (usbd_dfu_write(g_usbd_dfu.alt_setting, *data, setup->wLength) < 0) {
                             g_usbd_dfu.dfu_state = DFU_STATE_DFU_ERROR;
                             return -1;
                         } else {
@@ -97,7 +98,7 @@ static int dfu_class_interface_request_handler(uint8_t busid, struct usb_setup_p
                     usbd_dfu_begin_load();
 
                     uint16_t actual_length;
-                    if (usbd_dfu_read(setup->wValue, *data, setup->wLength, &actual_length) < 0) {
+                    if (usbd_dfu_read(g_usbd_dfu.alt_setting, *data, setup->wLength, &actual_length) < 0) {
                         g_usbd_dfu.dfu_state = DFU_STATE_DFU_ERROR;
                         return -1;
                     } else {
@@ -179,7 +180,7 @@ static int dfu_class_interface_request_handler(uint8_t busid, struct usb_setup_p
                         usbd_dfu_end_load();
                         g_usbd_dfu.dfu_state = DFU_STATE_DFU_MANIFEST_SYNC;
                     } else {
-                        if (usbd_dfu_write(setup->wValue, *data, setup->wLength) < 0) {
+                        if (usbd_dfu_write(g_usbd_dfu.alt_setting, *data, setup->wLength) < 0) {
                             g_usbd_dfu.dfu_state = DFU_STATE_DFU_ERROR;
                             return -1;
                         } else {
@@ -213,7 +214,7 @@ static int dfu_class_interface_request_handler(uint8_t busid, struct usb_setup_p
             switch (setup->bRequest) {
                 case DFU_REQUEST_UPLOAD: {
                     uint16_t actual_length;
-                    if (usbd_dfu_read(setup->wValue, *data, setup->wLength, &actual_length) < 0) {
+                    if (usbd_dfu_read(g_usbd_dfu.alt_setting, *data, setup->wLength, &actual_length) < 0) {
                         g_usbd_dfu.dfu_state = DFU_STATE_DFU_ERROR;
                         return -1;
                     } else {
@@ -316,6 +317,15 @@ static void dfu_notify_handler(uint8_t busid, uint8_t event, void *arg)
     switch (event) {
         case USBD_EVENT_RESET:
             g_usbd_dfu.dfu_state = DFU_STATE_DFU_IDLE;
+            g_usbd_dfu.alt_setting = 0;
+            break;
+        case USBD_EVENT_SET_INTERFACE:
+            /* Track the current alternate setting for DFU operations */
+            /* arg is a pointer to the interface descriptor; alternate setting is at offset 3 */
+            if (arg) {
+                g_usbd_dfu.alt_setting = ((uint8_t *)arg)[3];
+            }
+            USB_LOG_DBG("DFU alternate setting changed to %d\r\n", g_usbd_dfu.alt_setting);
             break;
         default:
             break;
