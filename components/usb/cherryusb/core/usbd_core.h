@@ -47,7 +47,8 @@ enum usbd_event_type {
     USBD_EVENT_INIT,              /** USB init done when call usbd_initialize */
     USBD_EVENT_DEINIT,            /** USB deinit done when call usbd_deinitialize */
     USBD_EVENT_CLR_HALT,          /** Host cleared an endpoint halt (class notify only) */
-    USBD_EVENT_UNKNOWN
+    USBD_EVENT_UNKNOWN,
+    USBD_EVENT_UNCONFIGURED       /** Host selected configuration zero */
 };
 
 #define USBD_EP0_STATE_SETUP      0

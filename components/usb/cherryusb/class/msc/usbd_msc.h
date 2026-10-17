@@ -34,6 +34,10 @@ void usbd_msc_set_media_ready(uint8_t busid, bool ready);
 void usbd_msc_set_readonly(uint8_t busid, bool readonly);
 bool usbd_msc_get_popup(uint8_t busid);
 
+/* Optional application hook after START STOP UNIT changes eject state.
+ * Runs in the caller's context (USB IRQ, or MSC worker if configured). */
+void usbd_msc_popup_changed(uint8_t busid);
+
 void usbd_msc_polling(uint8_t busid);
 
 #ifdef __cplusplus

@@ -537,6 +537,7 @@ static bool usbd_std_device_req_handler(uint8_t busid, struct usb_setup_packet *
 
             if (value == 0) {
                 g_usbd_core[busid].configuration = 0;
+                g_usbd_core[busid].event_handler(busid, USBD_EVENT_UNCONFIGURED);
             } else if (!usbd_set_configuration(busid, value, 0)) {
                 ret = false;
             } else {

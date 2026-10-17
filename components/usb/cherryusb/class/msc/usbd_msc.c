@@ -401,7 +401,10 @@ static bool SCSI_startStopUnit(uint8_t busid, uint8_t **data, uint32_t *len)
     } else if ((g_usbd_msc[busid].cbw.CB[4] & 0x3U) == 0x2U) /* START=0 and LOEJ Load Eject=1 */
     {
         //SCSI_MEDIUM_EJECTED;
-        g_usbd_msc[busid].popup = true;
+        if (!g_usbd_msc[busid].popup) {
+            g_usbd_msc[busid].popup = true;
+            usbd_msc_popup_changed(busid);
+        }
     } else if ((g_usbd_msc[busid].cbw.CB[4] & 0x3U) == 0x3U) /* START=1 and LOEJ Load Eject=1 */
     {
         //SCSI_MEDIUM_UNLOCKED;
@@ -1017,6 +1020,11 @@ void usbd_msc_set_readonly(uint8_t busid, bool readonly)
 bool usbd_msc_get_popup(uint8_t busid)
 {
     return g_usbd_msc[busid].popup;
+}
+
+__WEAK void usbd_msc_popup_changed(uint8_t busid)
+{
+    (void)busid;
 }
 
 __WEAK void usbd_msc_get_cap(uint8_t busid, uint8_t lun, uint32_t *block_num, uint32_t *block_size)
