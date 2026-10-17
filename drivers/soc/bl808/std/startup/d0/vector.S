@@ -5,6 +5,10 @@
 #define MSTATUS_PRV1 0x0080
 #define SSTATUS_PRV1 0x0020
 
+/* 19 saved integer words plus padding: C handlers require 16-byte SP alignment.
+ * Register offsets remain unchanged; padding occupies the last eight bytes. */
+#define IRQ_INTEGER_FRAME_SIZE 160
+
 .section .text
     .align  6
     .globl  __Vectors__
@@ -91,7 +95,7 @@ Scoret_Handler:
     .weak   Mcoret_Handler
     .type   Mcoret_Handler, %function
 Mcoret_Handler:
-    addi    sp, sp, -(76+76)
+    addi    sp, sp, -IRQ_INTEGER_FRAME_SIZE
     sd      t0, (4+4)(sp)
     sd      t1, (8+8)(sp)
     sd      t2, (12+12)(sp)
@@ -190,7 +194,7 @@ Mcoret_Handler:
     ld      t5, (56+56)(sp)
     ld      t6, (60+60)(sp)
 
-    addi    sp, sp, (76+76)
+    addi    sp, sp, IRQ_INTEGER_FRAME_SIZE
     mret
 
 /****************************************************************************
@@ -202,7 +206,7 @@ Mcoret_Handler:
     .weak   Sirq_Handler
     .type   Sirq_Handler, %function
 Sirq_Handler:
-    addi    sp, sp, -(76+76)
+    addi    sp, sp, -IRQ_INTEGER_FRAME_SIZE
     sd      t0, (4+4)(sp)
     sd      t1, (8+8)(sp)
     sd      t2, (12+12)(sp)
@@ -311,7 +315,7 @@ Sirq_Handler:
     ld      t5, (56+56)(sp)
     ld      t6, (60+60)(sp)
 
-    addi    sp, sp, (76+76)
+    addi    sp, sp, IRQ_INTEGER_FRAME_SIZE
     sret
 
 /****************************************************************************
@@ -325,7 +329,7 @@ Sirq_Handler:
     .weak   Sirq_Handler_M
     .type   Sirq_Handler_M, %function
 Sirq_Handler_M:
-    addi    sp, sp, -(76+76)
+    addi    sp, sp, -IRQ_INTEGER_FRAME_SIZE
     sd      t0, (4+4)(sp)
     sd      t1, (8+8)(sp)
     sd      t2, (12+12)(sp)
@@ -438,7 +442,7 @@ Sirq_Handler_M:
     ld      t5, (56+56)(sp)
     ld      t6, (60+60)(sp)
 
-    addi    sp, sp, (76+76)
+    addi    sp, sp, IRQ_INTEGER_FRAME_SIZE
     mret
 
 /****************************************************************************
@@ -450,7 +454,7 @@ Sirq_Handler_M:
     .weak   Default_IRQHandler
     .type   Default_IRQHandler, %function
 Default_IRQHandler:
-    addi    sp, sp, -(76+76)
+    addi    sp, sp, -IRQ_INTEGER_FRAME_SIZE
     sd      t0, (4+4)(sp)
     sd      t1, (8+8)(sp)
     sd      t2, (12+12)(sp)
@@ -573,7 +577,7 @@ Default_IRQHandler:
     ld      t5, (56+56)(sp)
     ld      t6, (60+60)(sp)
 
-    addi    sp, sp, (76+76)
+    addi    sp, sp, IRQ_INTEGER_FRAME_SIZE
     mret
 
 /****************************************************************************
@@ -588,15 +592,23 @@ Default_IRQHandler:
 Default_Handler:
 exception_common:
 
+    /* Switch stacks without clobbering any interrupted register. mscratch is
+     * zero while a trap is being handled, so a nested fault cannot overwrite
+     * the first frame or recursively reuse the diagnostic stack. */
+    csrrw sp, mscratch, sp
+    beqz sp, exception_nested_fault
     addi sp, sp, -XCPTCONTEXT_SIZE
 
     sd   x1,  REG_X1(sp)   /* ra */
-    /* sd   x3,  REG_X3(sp) */   /* gp */
+    sd   x8,  REG_X8(sp)   /* s0, before using it as scratch */
+    csrr s0, mscratch
+    sd   s0, REG_X2(sp)    /* original SP, even when it is not a valid address */
+    csrw mscratch, zero
+    sd   x3,  REG_X3(sp)   /* gp: include the actual value in fault dumps */
     sd   x4,  REG_X4(sp)   /* tp */
     sd   x5,  REG_X5(sp)   /* t0 */
     sd   x6,  REG_X6(sp)   /* t1 */
     sd   x7,  REG_X7(sp)   /* t2 */
-    sd   x8,  REG_X8(sp)   /* s0 */
     sd   x9,  REG_X9(sp)   /* s1 */
     sd   x10, REG_X10(sp)  /* a0 */
     sd   x11, REG_X11(sp)  /* a1 */
@@ -624,9 +636,6 @@ exception_common:
     csrr s0, mstatus
     sd   s0, REG_INT_CTX(sp)  /* mstatus */
 
-    addi s0, sp, XCPTCONTEXT_SIZE
-    sd   s0, REG_X2(sp)       /* original SP */
-
     /* Setup arg0(exception cause), arg1(context) */
 
     csrr a0, mcause           /* exception cause */
@@ -635,9 +644,16 @@ exception_common:
 
     mv   a1, sp      /* context = sp */
 
-    la   sp, g_trap_sp
+    /* Diagnostics must also work when the fault was a corrupted gp or FS=Off.
+     * Their interrupted values are already preserved in the frame. */
+.option push
+.option norelax
+    la   gp, __global_pointer$
+.option pop
+    li   s0, 0x2000
+    csrs mstatus, s0
 
-    /* Call interrupt handler in C */
+    /* C grows below the saved frame, never over it. */
 
     jal  x1, trap_c
 
@@ -647,10 +663,12 @@ exception_common:
     ld   s0, REG_EPC(sp)     /* restore mepc */
     csrw mepc, s0
 
+    la   s0, g_top_trapstack
+    csrw mscratch, s0
     ld   s0, REG_INT_CTX(sp) /* restore mstatus */
     csrw mstatus, s0
 
-    /* ld  x3,  REG_X3(sp) */ /* gp */
+    ld   x3,  REG_X3(sp)  /* gp */
     ld  x4,  REG_X4(sp)  /* tp */
     ld  x5,  REG_X5(sp)  /* t0 */
     ld  x6,  REG_X6(sp)  /* t1 */
@@ -688,6 +706,11 @@ exception_common:
 
     mret
 
+
+    /* Leave the first frame intact for a debugger if diagnostics fault. */
+    .global exception_nested_fault
+exception_nested_fault:
+    j exception_nested_fault
 
 /*    Macro to define default handlers. Default handler
  *    will be weak symbol and just dead loops. They can be

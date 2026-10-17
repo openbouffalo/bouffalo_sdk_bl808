@@ -74,7 +74,9 @@ __start:
 
     .weak __StackTop
     la      sp, __StackTop
-    csrw    mscratch, sp
+    /* Synchronous traps must not use a potentially invalid task stack. */
+    la      t0, g_top_trapstack
+    csrw    mscratch, t0
 
     call     SystemInit
 

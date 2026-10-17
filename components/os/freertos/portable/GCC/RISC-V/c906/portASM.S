@@ -232,7 +232,15 @@ Mtspend_Handler:
     load_x       a1, (a1)
     store_x      sp, (a1)
 
+    /* The saved RV64 context is 63 words (504 bytes) with FP enabled.
+     * Keep its layout unchanged, but align the stack for the C ABI call. */
+#if __riscv_xlen == 64
+    addi    sp, sp, -8
+#endif
     jal     vTaskSwitchContext
+#if __riscv_xlen == 64
+    addi    sp, sp, 8
+#endif
 
     la      a1, pxCurrentTCB
     load_x      a1, (a1)
